@@ -1,4 +1,3 @@
-# from django.contrib.auth.hashers import make_password, check_password
 from rest_framework import serializers
 
 from users.models import User
@@ -28,25 +27,3 @@ class CustomUserSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
-
-# class ResetCustomUserPasswordSerializer(serializers.Serializer):
-#     password = serializers.CharField(min_length=8, write_only=True)
-#
-#     def update(self, instance, validated_data):
-#         password = validated_data.get('password')
-#         if password and not check_password(password, instance.password):
-#             # Only update the password if it's different from the existing one
-#             instance.password = make_password(password)
-#             instance.save()
-#         return instance
-#
-#
-# class MakeCustomUserInactiveActiveSerializer(serializers.Serializer):
-#     is_active = serializers.BooleanField()
-#
-#     def update(self, instance, validated_data):
-#         is_active = validated_data.get('is_active')
-#         if is_active is not None:
-#             instance.is_active = is_active
-#         instance.save()
-#         return instance
