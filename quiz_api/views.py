@@ -2,8 +2,8 @@ from rest_framework import generics
 from rest_framework.permissions import AllowAny
 from django.shortcuts import get_object_or_404  # Import get_object_or_404
 
-from quiz_api.models import Quiz, Question
-from quiz_api.serializers import QuizSerializer, QuestionSerializer
+from quiz_api.models import Quiz, Question, Option
+from quiz_api.serializers import QuizSerializer, QuestionSerializer, OptionSerializer
 
 
 class QuizListCreate(generics.ListCreateAPIView):
@@ -50,5 +50,40 @@ class QuestionDetails(generics.RetrieveUpdateDestroyAPIView):
     def get_object(self):
         quiz_id = self.kwargs['pk']
         question_pk = self.kwargs['question_pk']
-        quiz = get_object_or_404(Question, pk=question_pk, quiz_id=quiz_id)
-        return quiz
+        question = get_object_or_404(Question, pk=question_pk, quiz__pk=quiz_id)
+        return question
+
+
+class OptionsListCreate(generics.ListCreateAPIView):
+    serializer_class = OptionSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        quiz_id = self.kwargs['pk']
+        question_id = self.kwargs['question_pk']
+        question = get_object_or_404(Question, quiz__pk=quiz_id, pk=question_id)
+
+        # Return only options related to the specified question
+        return Option.objects.filter(question=question)
+
+    def perform_create(self, serializer):
+        quiz_id = self.kwargs['pk']
+        question_id = self.kwargs['question_pk']
+
+        # Make sure the question is related to the specified quiz
+        question = get_object_or_404(Question, pk=question_id, quiz__pk=quiz_id)
+
+        # Set the question field before saving
+        serializer.save(question=question)
+
+
+class OptionDetails(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Option.objects.all()
+    serializer_class = OptionSerializer
+    permission_classes = [AllowAny]
+
+    def get_object(self):
+        question_id = self.kwargs['question_pk']
+        option_pk = self.kwargs['option_pk']
+        question = get_object_or_404(Option, pk=option_pk, question_id=question_id)
+        return question

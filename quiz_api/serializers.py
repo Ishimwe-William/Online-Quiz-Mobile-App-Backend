@@ -6,7 +6,7 @@ from quiz_api.models import Quiz, Question, Option, UserAnswer, QuizResult, Noti
 class QuizSerializer(serializers.ModelSerializer):
     class Meta:
         model = Quiz
-        fields = ['id', 'title', 'created_at', 'updated_at']  # relevant fields
+        fields = ['id', 'title', 'created_at', 'updated_at', 'slug']  # relevant fields
 
 
 class QuestionSerializer(serializers.ModelSerializer):
@@ -16,6 +16,8 @@ class QuestionSerializer(serializers.ModelSerializer):
 
 
 class OptionSerializer(serializers.ModelSerializer):
+    question = serializers.PrimaryKeyRelatedField(read_only=True)
+
     class Meta:
         model = Option
         fields = '__all__'
@@ -37,5 +39,3 @@ class NotificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Notification
         fields = '__all__'
-
-
