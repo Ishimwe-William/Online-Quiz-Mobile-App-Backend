@@ -19,6 +19,9 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+
+    # http://localhost:8000/auth/login/google-oauth2/
+    path('auth/', include('social_django.urls', namespace='social')),
     path('api/users/', include('users.urls', namespace='users')),  # url endpoint for users
     path('api/', include('quiz_api.urls', namespace='quiz_api')),  # url endpoint for main api
 ]
