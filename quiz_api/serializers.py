@@ -26,7 +26,7 @@ class OptionSerializer(serializers.ModelSerializer):
 class UserAnswerSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserAnswer
-        fields = '__all__'
+        fields = ['id', 'user', 'question', 'selected_option']
 
 
 class QuizResultSerializer(serializers.ModelSerializer):
