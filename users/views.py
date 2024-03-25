@@ -1,10 +1,11 @@
-from rest_framework import generics
-# from rest_framework.generics import UpdateAPIView
-from rest_framework.permissions import AllowAny, IsAuthenticated\
-    # , IsAdminUser
+from rest_framework import generics, viewsets, permissions, status
+from rest_framework.exceptions import ValidationError
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+
 from users.models import User
-from users.serializers import CustomUserSerializer \
-    # , ResetCustomUserPasswordSerializer, MakeCustomUserInactiveActiveSerializer
+from users.serializers import CustomUserSerializer
+from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 
 
 # Create a user
@@ -30,16 +31,21 @@ class UserDetail(generics.RetrieveUpdateAPIView):
     serializer_class = CustomUserSerializer
     permission_classes = [AllowAny]
 
-# # Get single user | reset user password
-# class ResetCustomUserPassword(UpdateAPIView):
-#     queryset = User.objects.all()
-#     serializer_class = ResetCustomUserPasswordSerializer
-#     permission_classes = [AllowAny]
 
-#
-# # Get single user | make user inactive
-# class ManageUserStatus(UpdateAPIView):
-#     queryset = User.objects.all()
-#     serializer_class = MakeCustomUserInactiveActiveSerializer
-#     # Only admin can make user inactive/active
-#     permission_classes = [IsAdminUser]
+class LogoutViewSet(viewsets.ViewSet):
+    authentication_classes = ()
+    permission_classes = (permissions.IsAuthenticated,)
+    http_method_names = ["post"]
+
+    def create(self, request, *args, **kwargs):
+        refresh = request.data.get("refresh")
+        if refresh is None:
+            raise ValidationError({
+                "detail": "A refresh token is required."
+            })
+        try:
+            token = RefreshToken(request.data.get("refresh"))
+            token.blacklist()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except TokenError:
+            raise ValidationError({"detail": "The refresh token is invalid."})
