@@ -1,6 +1,6 @@
 from django.urls import path
 
-from quiz_api.views import QuizListCreate, QuizDetails, QuestionsListCreate, QuestionDetails, OptionsListCreate, \
+from quiz_api.views import QuizListCreate, TakeQuiz, QuestionsListCreate, QuestionDetails, OptionsListCreate, \
     OptionDetails, QuestionWithOptions, RetrieveUpdateDeleteQuiz
 
 app_name = 'quiz_api'
@@ -21,5 +21,7 @@ urlpatterns = [
 
     # UserAnswer endpoints
     path('<int:pk>/questions/<int:question_pk>/take-quiz/', QuestionWithOptions.as_view(), name='question-with-options'),
+    # take quiz endpoints
+    path('<int:pk>/take-quiz/', TakeQuiz.as_view(), name='take-quiz'),
 
 ]

@@ -15,7 +15,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
         model = User
         fields = (
             'id', 'email', 'firstname', 'lastname', 'username',
-            'password', 'created_at', 'updated_at')
+            'password', 'created_at', 'updated_at', 'is_superuser')
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
@@ -26,4 +26,3 @@ class CustomUserSerializer(serializers.ModelSerializer):
             instance.set_password(password)
         instance.save()
         return instance
-
