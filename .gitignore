@@ -14,3 +14,4 @@
 db.sqlite3
 .coverage
 /htmlcov/
+/core/*.json

@@ -21,6 +21,12 @@ class RetrieveUpdateDeleteQuiz(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [AllowAny]
 
 
+class TakeQuiz(generics.RetrieveAPIView):
+    queryset = Quiz.objects.all()
+    serializer_class = QuizSerializer
+    permission_classes = [AllowAny]
+
+
 class QuizDetails(generics.RetrieveUpdateAPIView):
     queryset = Quiz.objects.all()
     serializer_class = QuizSerializer
