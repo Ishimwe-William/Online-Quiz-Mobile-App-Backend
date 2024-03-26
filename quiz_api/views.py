@@ -5,8 +5,9 @@ from rest_framework.response import Response
 
 from django.shortcuts import get_object_or_404  # Import get_object_or_404
 
-from quiz_api.models import Quiz, Question, Option, UserAnswer
-from quiz_api.serializers import QuizSerializer, QuestionSerializer, OptionSerializer, UserAnswerSerializer
+from quiz_api.models import Quiz, Question, Option, UserAnswer, QuizResult
+from quiz_api.serializers import QuizSerializer, QuestionSerializer, OptionSerializer, UserAnswerSerializer, \
+    QuizResultSerializer
 
 
 class QuizListCreate(generics.ListCreateAPIView):
@@ -126,69 +127,19 @@ class QuestionWithOptions(generics.RetrieveAPIView):
 
         return Response(response_data, status=status.HTTP_200_OK)
 
-    # def create(self, request, *args, **kwargs):
-    #     question_id = self.kwargs['question_pk']
-    #     option_id = request.data.get('selected_option', None)
-    #
-    #     if not option_id:
-    #         return Response({'error': 'Please provide selected_option in the request data.'},
-    #                         status=status.HTTP_400_BAD_REQUEST)
-    #
-    #     # Check if the user is authenticated
-    #     if request.user and request.user.is_authenticated:
-    #         user = request.user
-    #     else:
-    #         # If not authenticated, use an AnonymousUser
-    #         user = AnonymousUser()
-    #
-    #     question = get_object_or_404(Question, pk=question_id)
-    #     option = get_object_or_404(Option, pk=option_id, question=question)
-    #
-    #     # Check if the user has already answered this question
-    #     user_answer, created = UserAnswer.objects.get_or_create(user=user, question=question)
-    #
-    #     if not created:
-    #         # User has already answered this question, update the answer
-    #         user_answer.selected_option = option
-    #     else:
-    #         # User is answering for the first time
-    #         user_answer.selected_option = option
-    #
-    #     user_answer.save()
-    #
-    #     serializer = UserAnswerSerializer(user_answer)
-    #     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    # def post(self, request, *args, **kwargs):
-    #     question_id = self.kwargs['question_pk']
-    #     option_id = request.data.get('selected_option', None)
-    #
-    #     if not option_id:
-    #         return Response({'error': 'Please provide selected_option in the request data.'},
-    #                         status=status.HTTP_400_BAD_REQUEST)
-    #
-    #     question = get_object_or_404(Question, pk=question_id)
-    #     option = get_object_or_404(Option, pk=option_id, question=question)
-    #
-    #     # Check if the user is authenticated
-    #     if request.user.is_authenticated:
-    #         # User is authenticated, save the user ID
-    #         user_id = request.user.id
-    #     else:
-    #         # User is not authenticated, save a placeholder identifier (e.g., IP address)
-    #         user_id = 'anonymous_user_placeholder'
-    #
-    #     # Check if the user has already answered this question
-    #     user_answer, created = UserAnswer.objects.get_or_create(user_id=user_id, question=question)
-    #
-    #     if not created:
-    #         # User has already answered this question, update the answer
-    #         user_answer.selected_option = option
-    #     else:
-    #         # User is answering for the first time
-    #         user_answer.selected_option = option
-    #
-    #     user_answer.save()
-    #
-    #     serializer = UserAnswerSerializer(user_answer)
-    #     return Response(serializer.data, status=status.HTTP_201_CREATED)
+class QuizResultCreateAPIView(generics.CreateAPIView):
+    queryset = QuizResult.objects.all()
+    serializer_class = QuizResultSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+
+class QuizResultRetrieveAPIView(generics.RetrieveAPIView):
+    queryset = QuizResult.objects.all()
+    serializer_class = QuizResultSerializer

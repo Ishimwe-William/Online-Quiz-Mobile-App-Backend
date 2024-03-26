@@ -8,7 +8,7 @@ class Quiz(models.Model):
     title = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    slug = models.SlugField(max_length=250, editable=False,)
+    slug = models.SlugField(max_length=250, editable=False, )
 
     def __str__(self):
         return self.title
@@ -45,7 +45,9 @@ class Option(models.Model):
 class QuizResult(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, db_index=True)
     quiz = models.ForeignKey('Quiz', on_delete=models.CASCADE, db_index=True)
+    selected_answers = models.JSONField()
     score = models.IntegerField()
+    total_marks = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -56,7 +58,7 @@ class QuizResult(models.Model):
         return score
 
     def __str__(self):
-        return f"{self.user.username} - {self.quiz.title} - Score: {self.score}"
+        return f"{self.user.username} - {self.quiz.title} - Score: {self.total_points}"
 
 
 class Notification(models.Model):
